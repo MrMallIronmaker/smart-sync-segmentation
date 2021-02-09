@@ -5,6 +5,12 @@ using namespace Rcpp;
 #define STREAM_START -1
 #define STREAM_FAKE -2
 
+//' C++ workhorse
+//' 
+//' Calculate the segmentation given a value matrix and minimum streak
+//'
+//' @param values Matrix whose columns are streams to switch between
+//' @param streak Minimum length between switches
 // [[Rcpp::export]]
 NumericVector smart_segment_cpp (NumericMatrix values, IntegerVector streak) {
   
