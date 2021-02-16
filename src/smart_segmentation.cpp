@@ -27,14 +27,13 @@ NumericVector smart_segment_cpp (NumericMatrix values, IntegerVector streak) {
   // TODO: faster cases for min_length = 1 and min_length > values.rows() / 2
   
   // set up for computational efficiency by creating the partial sum arrays
-  /*
+
   NumericMatrix partial_sum = clone(values);
   for (int i = 0; i < partial_sum.cols(); i++) {
     for (int j = 1; j < partial_sum.rows(); j++) {
       partial_sum(j, i) += partial_sum(j - 1, i);
     }
   } 
-  */
   
   // Initilaize four matrices, storing best scores and indexes for completed and incomplete streaks respectively.
   NumericMatrix completed_scores(values.rows(), values.cols());
@@ -55,11 +54,7 @@ NumericVector smart_segment_cpp (NumericMatrix values, IntegerVector streak) {
   // i = min_length here
   for (int stream = 0; stream < values.cols(); stream++) {
     double completed_score = 0.0;
-    // TODO: use the partial sums for this.
-    for (int j = 0; j <= min_length - 1; j++) {
-      completed_score += values(j, stream);
-    }
-    completed_scores(min_length - 1, stream) = completed_score;
+    completed_scores(min_length - 1, stream) = partial_sum(min_length - 1, stream);
   }
   
   // Score these, "normally"
@@ -73,10 +68,7 @@ NumericVector smart_segment_cpp (NumericMatrix values, IntegerVector streak) {
       int best_option = stream; // that is, tack on to the previous score.
       
       // TODO: use the partial sums for this.
-      double completion_score = 0.0;
-      for (int j = 0; j < min_length; j++) {
-        completion_score += values(i - j, stream);
-      }
+      double completion_score = partial_sum(i, stream) - partial_sum(i-min_length, stream);
       
       for (int option = 0; option < completed_scores.cols(); option++) {
         if (option != stream) { // TODO: can this be safely ignored? probably, because there are no uncompleted streaks right?
